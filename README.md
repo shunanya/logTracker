@@ -1,2 +1,38 @@
-# logTracker
-Put requests tracking info into log records
+## LogTracking ##
+#### Overview ####
+Logging are one of the most important aspect when it comes to detecting any problem or anomaly in production. Generally, one of the biggest problems is being able to track the flow of a single request. Since when there are many concurrent requests, the logs of all of them are mixed, making it impossible to track them unless they have a unique identifier.
+So, the ability to identify in each trace of log to which request belongs is very important. Fortunately, Node.js beginning version 8.x inserted 'Async Hooks' module that provides an API to register callbacks tracking the lifetime of asynchronous resources created inside a Node.js application. A few wrappers were created already based on 'Async Hooks' named 'cls-*'. They represents so named 'continuation-local storage' which works like thread-local storage in threaded programming, but is based on chains of Node-style callbacks instead of threads. 
+Thus, the current implementation uses quite mature 'cls-hooked' implementation. Simply, 'cls-hooked' creates a quite long stack of marked requests. Note also that 'cls-hooked' is grouping unique requests values into namespaces which have to be different for any separate application.
+#### Description ####
+The module 'logTracker' wraps Log4js logger so that any message will be appended by unique info of request (if defined).
+It's necessary to start tracking process by creating request unique identifier to be abble to track the request. 
+To do so can be by calling method 'startTracking'  as early as possible. It receives two parameters: opt and callback.
+The first parameter serves to unique mark a request and can representing Number, String, custom Object or even can be omitted. Application can itself generates the unique ID and send it as a parameter 'opt' or can wrap it into custom Object under key 'reqId'. Besides, the opt parameter can representing Request object. In this case, the MD5 hash will be generated and represents a request unique ID. If the opt parameter omitted, the random number will be generated as a unique ID of request.
+Please Note that the custom Object can consists any other keys which do message more informative.
+So next, any log record will be appended by unique tracking info which allow to simply tracks any separate request.
+#### Public Methods ####
+>const logger = **require('logTracker')**;
+>const nlogger = **logger.getLogger(**'node_server');
+>
+>http.createServer((req, res) => {
+>    logger.**startTracking**(req, (err, data) => {...}    
+>}).listen(port, host);
+>	
+#### Example ####
+The simple test is located in the './test' folder.
+Test creates the simple HTTP server and when you request it by url 'http://127.0.0.1:8080/' the answere should be 'OK'. 
+Correspomdigly the log file should contains the log records with tracking info.
+
+
+>[2018-07-30T16:00:48.080] [INFO] node_server - : >>>>>>>>>>>>
+>[2018-07-30T16:00:48.085] [WARN] node_queue - {"user":"simon","reqId":"f5a36a13b4a8df29f2ececc334ad9e9e"}: start tracking err:null; data:Ok
+>[2018-07-30T16:00:48.085] [INFO] node_server - {"user":"simon","reqId":"f5a36a13b4a8df29f2ececc334ad9e9e"}: !!! request finishing !!!
+>[2018-07-30T16:00:48.087] [INFO] node_server - : >>>>>>>>>>>>
+>[2018-07-30T16:00:48.088] [WARN] node_queue - {"user":"john","reqId":"f8d99cf89980dffa610d4218b40e2855"}: start tracking err:null; data:Ok
+>[2018-07-30T16:00:48.089] [INFO] node_server - {"user":"john","reqId":"f8d99cf89980dffa610d4218b40e2855"}: !!! request finishing !!!
+>[2018-07-30T16:00:49.093] [INFO] node_server - {"user":"simon","reqId":"f5a36a13b4a8df29f2ececc334ad9e9e"}: >>>> request finished
+>[2018-07-30T16:00:49.099] [INFO] node_server - {"user":"john","reqId":"f8d99cf89980dffa610d4218b40e2855"}: >>>> request finished
+>
+#### References ####
+- https://nodejs.org/dist/latest-v8.x/docs/api/async_hooks.html
+- https://github.com/Jeff-Lewis/cls-hooked

@@ -1,0 +1,37 @@
+{
+	"appenders": {
+		"out": {
+			"type": "console",
+			"layout": {
+				"type": "colored"
+			}
+		},
+		"node_server": {
+			"category": "node_server",
+			"type": "dateFile",
+			"filename": "./logs/node.log",
+			"pattern": "-yyyyMMdd",
+			"layout": {
+				"type": "basic"
+			}
+		},
+		"node_queue": {
+			"type": "dateFile",
+			"filename": "./logs/queue.log",
+			"pattern": "-yyyyMMdd",
+			"layout": {
+				"type": "basic"
+			}
+		}
+	},
+	"categories": {
+		"default": {
+			"appenders": ["out", "node_queue"],
+			"level": "INFO"
+		},
+		"node_server": {
+			"appenders": ["out", "node_server"],
+			"level": "DEBUG"
+		}
+	}
+}

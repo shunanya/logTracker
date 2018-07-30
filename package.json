@@ -1,0 +1,17 @@
+{
+  "name": "logtracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "src/test/testLogTracker.js"
+  },
+  "author": "shunanya",
+  "license": "ISC",
+  "dependencies": {
+    "cls-hooked": "^4.2.2",
+    "lodash": "^4.17.10",
+    "log4js": "^3.0.3",
+    "node_hash": "^0.2.0"
+  }
+}
