@@ -10,8 +10,12 @@ To do so can be by calling method 'startTracking'  as early as possible. It rece
 The first parameter serves to unique mark a request and can representing Number, String, custom Object or even can be omitted. Application can itself generates the unique ID and send it as a parameter 'opt' or can wrap it into custom Object under key 'reqId'. Besides, the opt parameter can representing Request object. In this case, the MD5 hash will be generated and represents a request unique ID. If the opt parameter omitted, the random number will be generated as a unique ID of request.
 Please Note that the custom Object can consists any other keys which do message more informative.
 So next, any log record will be appended by unique tracking info which allow to simply tracks any separate request.
+#### Install ####
+To be able to use descibed here module you should put the following command 
+>npm install log-tracking --save
+
 #### Public Methods ####
->const logger = **require('logTracker')**;
+>const logger = **require('log-tracking')**;
 >const nlogger = **logger.getLogger(**'node_server');
 >
 >http.createServer((req, res) => {

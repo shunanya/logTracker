@@ -1,10 +1,10 @@
 {
-  "name": "logtracker",
+  "name": "log-tracking",
   "version": "1.0.0",
   "description": "Log with requests tracking",
   "main": "index.js",
   "scripts": {
-    "test": "src/test/testLogTracker.js"
+    "test": "./log-tracking/src/test/testLogTracker.js"
   },
   "repository": {
     "type": "git",
@@ -23,8 +23,8 @@
     "url": "https://github.com/shunanya/logTracker/issues"
   },
   "directories": {
-    "properties": "./logTracker/properties",
-    "src": "./logTracker/src"
+    "properties": "./log-tracking/properties",
+    "src": "./log-tracking/src"
   },
   "engines": [ "node >=8.0.0" ],
   "license": "MIT",
