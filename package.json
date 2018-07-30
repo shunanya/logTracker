@@ -1,13 +1,33 @@
 {
   "name": "logtracker",
   "version": "1.0.0",
-  "description": "",
+  "description": "Log with requests tracking",
   "main": "index.js",
   "scripts": {
     "test": "src/test/testLogTracker.js"
   },
-  "author": "shunanya",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:shunanya/logTracker.git"
+  },
+  "keywords": [
+    "Node.js",
+    "Logging",
+    "Tracking"
+  ],
+  "author": {
+    "name": "Simon Hunanyan",
+    "email": "simon.hunanyan@monitis.com"
+  },
+  "bugs": {
+    "url": "https://github.com/shunanya/logTracker/issues"
+  },
+  "directories": {
+    "properties": "./logTracker/properties",
+    "src": "./logTracker/src"
+  },
+  "engines": [ "node >=8.0.0" ],
+  "license": "MIT",
   "dependencies": {
     "cls-hooked": "^4.2.2",
     "lodash": "^4.17.10",

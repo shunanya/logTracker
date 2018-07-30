@@ -1,4 +1,4 @@
-## LogTracking ##
+## LogTracker ##
 #### Overview ####
 Logging are one of the most important aspect when it comes to detecting any problem or anomaly in production. Generally, one of the biggest problems is being able to track the flow of a single request. Since when there are many concurrent requests, the logs of all of them are mixed, making it impossible to track them unless they have a unique identifier.
 So, the ability to identify in each trace of log to which request belongs is very important. Fortunately, Node.js beginning version 8.x inserted 'Async Hooks' module that provides an API to register callbacks tracking the lifetime of asynchronous resources created inside a Node.js application. A few wrappers were created already based on 'Async Hooks' named 'cls-*'. They represents so named 'continuation-local storage' which works like thread-local storage in threaded programming, but is based on chains of Node-style callbacks instead of threads. 
