@@ -1,9 +1,9 @@
 'use strict';
 
-const http = require('http');
-// const _ = require('lodash');
-const logger = require('../logTracker');
+global.log_config_path = './IoT_/properties/log4js.json'; //replace by existing config path
 
+const http = require('http');
+const logger = require('../logTracker');
 const nlogger = logger.getLogger('node_server');
 const qlogger = logger.getLogger('node_queue');
 const host = '127.0.0.1';

@@ -10,6 +10,8 @@ const getNamespace = require('cls-hooked').getNamespace;
 const createNamespace = require('cls-hooked').createNamespace;
 const namespace = createNamespace(namespace_name);
 
+global.log_config_path;
+
 (function() {
     const path = require('path')
         , fs = require('fs')
@@ -50,7 +52,8 @@ const namespace = createNamespace(namespace_name);
     }
 
     // source parameters
-    const log_conf = './properties/log4js.json';// relative path to the properties file (JSON)
+    console.log('log_config_path', log_config_path);
+    const log_conf = log_config_path?log_config_path:'./properties/log4js.json';// relative path to the properties file (JSON)
     const conf_file = utils.search_file(log_conf);
     if (conf_file) {
         // correcting(conf_file);

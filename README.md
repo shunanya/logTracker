@@ -7,20 +7,63 @@ Thus, the current implementation uses quite mature 'cls-hooked' implementation. 
 The module 'logTracker' wraps Log4js logger so that any message will be appended by unique info of request (if defined).
 It's necessary to start tracking process by creating request unique identifier to be abble to track the request. 
 To do so can be by calling method 'startTracking'  as early as possible. It receives two parameters: opt and callback.
-The first parameter serves to unique mark a request and can representing Number, String, custom Object or even can be omitted. Application can itself generates the unique ID and send it as a parameter 'opt' or can wrap it into custom Object under key 'reqId'. Besides, the opt parameter can representing Request object. In this case, the MD5 hash will be generated and represents a request unique ID. If the opt parameter omitted, the random number will be generated as a unique ID of request.
+The first parameter serves to unique mark a request and can representing Number, String, custom Object or even can be omitted. Application can itself generates the unique ID and send it as a parameter 'opt' or the unique id can be wrapped into custom Object under key 'reqId'. 
+Moreover, the opt parameter can representing Request object (http.IncomingMessage). In this case, the MD5 hash will be generated and it will represent a request unique ID. If the opt parameter omitted, the random number will be generated as a unique ID of request.
 Please Note that the custom Object can consists any other keys which do message more informative.
 So next, any log record will be appended by unique tracking info which allow to simply tracks any separate request.
+#### Logger ####
+The embedded logger wraps the log4js module. It override the log4js all important methods (TRACE, DEBUG, INFO, WARN, ERROR, FATAL). So you can use it as ordinary logger. It will append tracking info into log records in case you call 'startTracking' method at moment when request is arive. Otherwise, it will work like ordinary logger. 
+Besides it gives a possibility to point relative definition of logs location  in the log4js config file. Note that the config file have to be located in the './properties/' folder somewhere higher of current location. The configuration should be prepared according [log4js v2 or higher notations](https://github.com/log4js-node/log4js-node).
+Please find below the sample of log4js configuration.
+[log4js.json](https://www.screencast.com/t/lH3lUkwL) 
+
+![log4js.json ](https://www.screencast.com/t/lH3lUkwL  "log4js.json")
+    {
+        "appenders": {
+	    "out": {
+			"type": "console",  "layout": {"type": "colored"}
+	   },
+			"node_server": {
+				"category": "node_server",
+				"type": "dateFile",
+				"filename": "./logs/node.log",
+				"pattern": "-yyyyMMdd",
+				"layout": {
+					"type": "basic"
+				}
+			},
+			"node_queue": {
+				"type": "dateFile",
+				"filename": "./logs/queue.log",
+				"pattern": "-yyyyMMdd",
+				"layout": {
+					"type": "basic"
+				}
+			}
+		},
+		"categories": {
+			"default": {
+				"appenders": ["out", "node_queue"],
+				"level": "INFO"
+			},
+			"node_server": {
+				"appenders": ["out", "node_server"],
+				"level": "DEBUG"
+			}
+		}
+	}
+	
 #### Install ####
 To be able to use descibed here module you should put the following command 
 >npm install log-tracking --save
 
 #### Public Methods ####
->const logger = **require('log-tracking')**;
->const nlogger = **logger.getLogger(**'node_server');
+>const logger = **require('log-tracking')**;  
+>const nlogger = **logger.getLogger(**'node_server');  
 >
->http.createServer((req, res) => {
+>http.createServer((req, res) => {  
 >    logger.**startTracking**(req, (err, data) => {...}    
->}).listen(port, host);
+>}).listen(port, host);  
 >	
 #### Example ####
 The simple test is located in the './test' folder.
