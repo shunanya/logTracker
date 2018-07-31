@@ -35,6 +35,7 @@ To be able to use descibed here module you should put the following command
 The simple test is located in the './test' folder.
 Test creates the simple HTTP server and when you request it by url 'http://127.0.0.1:8080/' the answere should be 'OK'. 
 Correspomdigly the log file should contains the log records with tracking info.
+Note: you can use 'requester.js' module (located in ./test/ folder) to provide several requests in parallel.
 
 
 >[2018-07-30T16:00:48.080] [INFO] node_server - : >>>>>>>>>>>>
