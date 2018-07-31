@@ -13,46 +13,12 @@ Please Note that the custom Object can consists any other keys which do message 
 So next, any log record will be appended by unique tracking info which allow to simply tracks any separate request.
 #### Logger ####
 The embedded logger wraps the log4js module. It override the log4js all important methods (TRACE, DEBUG, INFO, WARN, ERROR, FATAL). So you can use it as ordinary logger. It will append tracking info into log records in case you call 'startTracking' method at moment when request is arive. Otherwise, it will work like ordinary logger. 
-Besides it gives a possibility to point relative definition of logs location  in the log4js config file. Note that the config file have to be located in the './properties/' folder somewhere higher of current location. The configuration should be prepared according [log4js v2 or higher notations](https://github.com/log4js-node/log4js-node).
-Please find below the sample of log4js configuration.
-[log4js.json](https://www.screencast.com/t/lH3lUkwL) 
-
-![log4js.json ](https://www.screencast.com/t/lH3lUkwL  "log4js.json")
-    {
-        "appenders": {
-	    "out": {
-			"type": "console",  "layout": {"type": "colored"}
-	   },
-			"node_server": {
-				"category": "node_server",
-				"type": "dateFile",
-				"filename": "./logs/node.log",
-				"pattern": "-yyyyMMdd",
-				"layout": {
-					"type": "basic"
-				}
-			},
-			"node_queue": {
-				"type": "dateFile",
-				"filename": "./logs/queue.log",
-				"pattern": "-yyyyMMdd",
-				"layout": {
-					"type": "basic"
-				}
-			}
-		},
-		"categories": {
-			"default": {
-				"appenders": ["out", "node_queue"],
-				"level": "INFO"
-			},
-			"node_server": {
-				"appenders": ["out", "node_server"],
-				"level": "DEBUG"
-			}
-		}
-	}
-	
+Besides it gives a possibility to point relative definition of logs location  in the log4js config file.  
+Note that the config file have to be located in the './properties/' folder somewhere higher of current location.  
+The configuration should be prepared according [log4js v2 or higher notations](https://github.com/log4js-node/log4js-node).  
+Naturally, you can define some other path (relative or absolute) by using global.log_config_path variable.
+Please find the sample of log4js configuration [here](https://www.screencast.com/t/lH3lUkwL).
+ 	
 #### Install ####
 To be able to use descibed here module you should put the following command 
 >npm install log-tracking --save
