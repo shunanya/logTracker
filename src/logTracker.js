@@ -1,16 +1,17 @@
 'use strict';
 
+global.log_config_path;
+global.namespace_name;
+
 const http = require('http');
 const log4js = require('log4js');
 const util = require('util');
 const hash = require('node_hash');
 const _ = require('lodash');
-const namespace_name = 'myNamespace';
+const current_namespace_name = namespace_name?namespace_name:'defaultNamespace';
 const getNamespace = require('cls-hooked').getNamespace;
 const createNamespace = require('cls-hooked').createNamespace;
-const namespace = createNamespace(namespace_name);
-
-global.log_config_path;
+const namespace = createNamespace(current_namespace_name);
 
 (function() {
     const path = require('path')
@@ -52,7 +53,7 @@ global.log_config_path;
     }
 
     // source parameters
-    console.log('log_config_path', log_config_path);
+    console.log('log_config_path', log_config_path, 'namespace', current_namespace_name);
     const log_conf = log_config_path?log_config_path:'./properties/log4js.json';// relative path to the properties file (JSON)
     const conf_file = utils.search_file(log_conf);
     if (conf_file) {
@@ -140,7 +141,7 @@ class Logger {
     }
 
     formatMessage(message){
-        const namespace = getNamespace(namespace_name);
+        const namespace = getNamespace(current_namespace_name);
         const pre = namespace && namespace.get('reqId')? JSON.stringify(namespace.get('reqId')):'';
         message = pre+': '+message;
         return message;

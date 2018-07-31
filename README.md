@@ -24,6 +24,9 @@ To be able to use descibed here module you should put the following command
 >npm install log-tracking --save
 
 #### Public Methods ####
+>global.**log_config_path** = 'existing log config path' //default path ('./properties/log4js.json') will be used if this definition omitted  
+>global.**namespace_name** = 'desired namespace name'  //default name ('defaultNamespace') will be used if this definition omitted  
+  
 >const logger = **require('log-tracking')**;  
 >const nlogger = **logger.getLogger(**'node_server');  
 >

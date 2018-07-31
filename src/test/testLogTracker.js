@@ -1,6 +1,7 @@
 'use strict';
 
 global.log_config_path = './IoT_/properties/log4js.json'; //replace by existing config path
+global.namespace_name = 'appNamespace'; // replace by desired name
 
 const http = require('http');
 const logger = require('../logTracker');
