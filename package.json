@@ -1,7 +1,7 @@
 {
   "name": "log-tracking",
-  "version": "1.0.4",
-  "description": "Log with requests tracking",
+  "version": "1.0.5",
+  "description": "Logging that support requests tracking",
   "main": "index.js",
   "scripts": {
     "test": "./log-tracking/src/test/testLogTracker.js"
@@ -23,7 +23,6 @@
     "url": "https://github.com/shunanya/logTracker/issues"
   },
   "directories": {
-    "properties": "./log-tracking/properties",
     "src": "./log-tracking/src"
   },
   "engines": [ "node >=8.0.0" ],

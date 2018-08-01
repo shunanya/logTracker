@@ -3,10 +3,10 @@
 'use strict';
 
 /*
-The module is sending several HTTP requests in parallel.
+The module is sending several HTTPS requests in parallel.
  */
 
-const http = require('http');
+const https = require('https');
 const url = require('url');
 const _ = require('lodash');
 
@@ -14,7 +14,7 @@ const _ = require('lodash');
 let req_count = 5;
 
 let int = setInterval(() => {
-    const url_for_test = 'http://127.0.0.1:8080';
+    const url_for_test = 'https://127.0.0.1:8443';
     const method = 'GET';
     request({'url':url_for_test, 'method':method}, (err, data) => {
         console.log(err, data);
@@ -42,7 +42,8 @@ function request(option, callback) {
         opt['host'] = urlObject.hostname;
         opt['path'] = urlObject.path;
         opt['port'] = urlObject.port;
-        const req = http.request(opt, (res) => {
+        opt['rejectUnauthorized'] = false;
+        const req = https.request(opt, (res) => {
             res.setEncoding('utf8');
             let buffer = '';
             res.on('data', (chunk) => {

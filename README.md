@@ -35,11 +35,12 @@ To be able to use descibed here module you should put the following command
 >}).listen(port, host);  
 >	
 #### Example ####
-The simple test is located in the './test' folder.
-Test creates the simple HTTP server and when you request it by url 'http://127.0.0.1:8080/' the answere should be 'OK'. 
-Correspomdigly the log file should contains the log records with tracking info.
-Note: you can use 'requester.js' module (located in ./test/ folder) to provide several requests in parallel.
-
+The simple test-modules are located in the './test' folder.  
+'testLogTracker' creates the simple HTTP server and when you request it by url 'http://127.0.0.1:8080/' the answere should be 'OK'.   
+Correspondigly the log file should contains the log records with tracking info.  
+'testLogTrackerS' creates the simple HTTPS server and when you request it by url 'http://127.0.0.1:8443/' the answere should be 'OK'.   
+Note: './test' folder contains 'requester.js' and 'requestS' modules which provide several HTTP and HTTPS requests in parallel.  
+The generated log file content shold be like depicted below:
 
 >[2018-07-30T16:00:48.080] [INFO] node_server - : >>>>>>>>>>>>
 >[2018-07-30T16:00:48.085] [WARN] node_queue - {"user":"simon","reqId":"f5a36a13b4a8df29f2ececc334ad9e9e"}: start tracking err:null; data:Ok

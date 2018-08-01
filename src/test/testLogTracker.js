@@ -1,5 +1,9 @@
 'use strict';
 
+/*
+ The module start up the test HTTP server that is intended for testing log-tracking workability.
+ */
+
 global.log_config_path = './IoT_/properties/log4js.json'; //replace by existing config path
 global.namespace_name = 'appNamespace'; // replace by desired name
 
@@ -23,3 +27,5 @@ http.createServer((req, res) => {
             nlogger.info('!!! request finishing !!!');
         });
 }).listen(port, host);
+
+nlogger.info('HTTP Server listen on', port);
