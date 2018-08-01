@@ -117,7 +117,9 @@ const namespace = createNamespace(current_namespace_name);
                 console.log('----- hash = ', rid['reqId']);
             } else if (opt['reqId'] || (opt['req'] && opt['req'] instanceof http.IncomingMessage)) {
                 rid = _.clone(opt);
-                rid['reqId'] = hash.md5(util.inspect(opt));
+                if (opt['req']) {
+                    rid['reqId'] = hash.md5(util.inspect(opt['req']));
+                }
                 delete rid['req'];
             } else {
                 return callback('invalid parameters');
