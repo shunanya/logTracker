@@ -16,7 +16,9 @@ const port = 8080;
 const users = ['simon', 'john'];
 
 http.createServer((req, res) => {
-    nlogger.info('>>>>>>>>>>>>');
+    if (nlogger.isInfoEnabled()) {
+        nlogger.info('>>>>>>>>>>>>');
+    }
     logger.startTracking({req:req, user:users[Math.round(Math.random()+0.1)]}, (err, data) => {
     // logger.startTracking(Math.ceil(Math.random() * 1000), (err, data) => {
             qlogger.warn('start tracking err:'+ err+'; data:'+ data);

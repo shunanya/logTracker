@@ -168,5 +168,22 @@ class Logger {
     trace(message) {
         this.log.trace(this.formatMessage(message));
     }
-
+    isInfoEnabled() {
+        return this.log.isInfoEnabled();
+    }
+    isDebugEnabled() {
+        return this.log.isDebugEnabled();
+    }
+    isTraceEnabled() {
+        return this.log.isTraceEnabled();
+    }
+    isFatalEnabled() {
+        return this.log.isFatalEnabled();
+    }
+    isErrorEnabled() {
+        return this.log.isErrorEnabled();
+    }
+    isWarnEnabled() {
+        return this.log.isWarnEnabled();
+    }
 }
