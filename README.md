@@ -1,9 +1,9 @@
 ## LogTracker ##
-#### Overview ####
+### Overview ###
 Logging are one of the most important aspect when it comes to detecting any problem or anomaly in production. Generally, one of the biggest problems is being able to track the flow of a single request. Since when there are many concurrent requests, the logs of all of them are mixed, making it impossible to track them unless they have a unique identifier.
 So, the ability to identify in each trace of log to which request belongs is very important. Fortunately, Node.js beginning version 8.x inserted 'Async Hooks' module that provides an API to register callbacks tracking the lifetime of asynchronous resources created inside a Node.js application. A few wrappers were created already based on 'Async Hooks' named 'cls-*'. They represents so named 'continuation-local storage' which works like thread-local storage in threaded programming, but is based on chains of Node-style callbacks instead of threads. 
 Thus, the current implementation uses quite mature 'cls-hooked' implementation. Simply, 'cls-hooked' creates a quite long stack of marked requests. Note also that 'cls-hooked' is grouping unique requests values into namespaces which have to be different for any separate application.
-#### Description ####
+### Description ###
 The module 'logTracker' wraps Log4js logger so that any message will be appended by unique info of request (if defined).
 It's necessary to start tracking process by creating request unique identifier to be abble to track the request. 
 To do so can be by calling method 'startTracking'  as early as possible. It receives two parameters: opt and callback.
@@ -18,23 +18,45 @@ Note that the config file have to be located in the './properties/' folder somew
 The configuration should be prepared according [log4js v2 or higher notations](https://github.com/log4js-node/log4js-node).  
 Naturally, you can define some other path (relative or absolute) by using global.log_config_path variable.
 Please find the sample of log4js configuration [here](https://www.screencast.com/t/lH3lUkwL).
- 	
-#### Install ####
+
+### Install ###
 To be able to use descibed here module you should put the following command 
 >npm install log-tracking --save
 
-#### Public Methods ####
+### Public Methods ###
+
+***
+
+#### startTracking(opt, callback) ####
+Initializing of request tracking log  
+  
+parameter **opt** unique marks the request. Can representing  Number, String or Object.   
+
+- if opt represents Number or String, it will be used as unique 'reqId' value.
+- if opt parameter represents http.IncommingMessage class (Request object), the unique reqId will be calculated as a MD5 hash of this object.<br>
+- if opt represents the custom Object, it should contains a unique value under 'reqId' key.  
+    Moreover, the custom Object can contains the Request object under 'req' key. In this case the 'reqId' will be calculated as a MD5 hash.  
+    The custom object can contains in addition any custom keys.They will be kept in log.
+- the random number will be used as a 'reqId' in case of opt parameter missed.  
+
+parameter **callback** is standard callback(err, data)
+
+***
+
+### Usage ###
+**Minimalist version:**
+
 >global.**log_config_path** = 'existing log config path' //default path ('./properties/log4js.json') will be used if this definition omitted  
 >global.**namespace_name** = 'desired namespace name'  //default name ('defaultNamespace') will be used if this definition omitted  
   
 >const logger = **require('log-tracking')**;  
->const nlogger = **logger.getLogger(**'node_server');  
+>const nlogger = **logger.getLogger(**'node_server');
 >
->http.createServer((req, res) => {  
+>http.createServer((req, res) => {
 >    logger.**startTracking**(req, (err, data) => {...}    
->}).listen(port, host);  
+>}).listen(port, host);
 >	
-#### Example ####
+#### Tests ####
 The simple test-modules are located in the './test' folder.  
 'testLogTracker' creates the simple HTTP server and when you request it by url 'http://127.0.0.1:8080/' the answere should be 'OK'.   
 Correspondigly the log file should contains the log records with tracking info.  

@@ -114,11 +114,13 @@ const namespace = createNamespace(current_namespace_name);
             if (opt instanceof http.IncomingMessage) {
                 console.log('----- Request received');
                 rid['reqId'] = hash.md5(util.inspect(opt));
+                namespace.bindEmitter(opt);
                 console.log('----- hash = ', rid['reqId']);
             } else if (opt['reqId'] || (opt['req'] && opt['req'] instanceof http.IncomingMessage)) {
                 rid = _.clone(opt);
                 if (opt['req']) {
                     rid['reqId'] = hash.md5(util.inspect(opt['req']));
+                    namespace.bindEmitter(opt['req']);
                 }
                 delete rid['req'];
             } else {
