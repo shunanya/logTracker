@@ -8,7 +8,14 @@ const log4js = require('log4js');
 const util = require('util');
 const hash = require('node_hash');
 const _ = require('lodash');
-const current_namespace_name = namespace_name?namespace_name:'defaultNamespace';
+let log_conf = './properties/log4js.json';
+try {
+    log_conf = log_config_path;
+} catch (err){/*ignore*/};
+let current_namespace_name = 'defaultNamespace';
+try{
+    current_namespace_name = namespace_name;
+} catch (err){/*ignore*/}
 const getNamespace = require('cls-hooked').getNamespace;
 const createNamespace = require('cls-hooked').createNamespace;
 const namespace = createNamespace(current_namespace_name);
@@ -53,8 +60,8 @@ const namespace = createNamespace(current_namespace_name);
     }
 
     // source parameters
-    console.log('log_config_path', log_config_path, 'namespace', current_namespace_name);
-    const log_conf = log_config_path?log_config_path:'./properties/log4js.json';// relative path to the properties file (JSON)
+    console.log('log_config_path =', log_conf, 'namespace =', current_namespace_name);
+    // const log_conf = log_config_path?log_config_path:'./properties/log4js.json';// relative path to the properties file (JSON)
     const conf_file = utils.search_file(log_conf);
     if (conf_file) {
         // correcting(conf_file);
@@ -146,8 +153,8 @@ class Logger {
 
     formatMessage(message){
         const namespace = getNamespace(current_namespace_name);
-        const pre = namespace && namespace.get('reqId')? JSON.stringify(namespace.get('reqId')):'';
-        message = pre+': '+message;
+        const pre = namespace && namespace.get('reqId')? (JSON.stringify(namespace.get('reqId'))+': '):'';
+        message = pre+message;
         return message;
     }
 

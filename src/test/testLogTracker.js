@@ -30,4 +30,4 @@ http.createServer((req, res) => {
         });
 }).listen(port, host);
 
-nlogger.info('HTTP Server listen on', port);
+nlogger.info('HTTP Server listen on port '+ port);

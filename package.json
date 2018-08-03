@@ -1,6 +1,6 @@
 {
   "name": "log-tracking",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Logging that support requests tracking",
   "main": "index.js",
   "scripts": {
