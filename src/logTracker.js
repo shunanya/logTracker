@@ -1,6 +1,6 @@
 'use strict';
 
-global.log_config_path;
+global.log_config;
 global.namespace_name;
 
 const http = require('http');
@@ -8,9 +8,9 @@ const log4js = require('log4js');
 const util = require('util');
 const hash = require('node_hash');
 const _ = require('lodash');
-let log_conf = './properties/log4js.json';
+let log_conf = './properties/log4js.json'; // default log configuration file
 try {
-    log_conf = log_config_path;
+    log_conf = log_config;
 } catch (err){/*ignore*/};
 let current_namespace_name = 'defaultNamespace';
 try{
@@ -26,49 +26,49 @@ const namespace = createNamespace(current_namespace_name);
         , utils = require('./utils');
 
     /**
-     * rewrite log4js configuration file by replacing relative paths to absolute
+     * rewrite log4js configuration by replacing relative paths to absolute (if necessary)
      *
-     * @param log_file
-     *            absolute or relative path to the log file
+     * @param log {String|Object}
+     *            can be defined as absolute or relative path to the log config file
+     *            or as log configuration object
+     * @return {Object} corrected logger configuration
      */
-    function correcting(log_file) {
-        console.log("Logger: opening log-conf file: " + log_file);
-        const log = fs.readFileSync(log_file, 'utf8');
-        let d = false;
+    function correcting(log) {
         const json = JSON.parse(log, function (key, value) {
-            if (key === 'filename') {
+            if (key === 'filename' && !path.isAbsolute(value)) {
                 const dirname = utils.dirname(value);
                 const basename = value.replace(dirname, '');
                 let file = utils.search_file(dirname);
                 file = path.join(file, basename);
                 if (file !== value) {
                     value = file;
-                    d = true;
                 }
             }
             return value;
         });
-        if (d) {
-            const logFileCorrect = log_file + ".new";
-            console.log("Logger: write corrections to " + logFileCorrect);
-            fs.writeFileSync(logFileCorrect, JSON.stringify(json, null, 2));
-            return logFileCorrect;
-        } else {
-            console.log("Logger: Config-file - There is nothing to correct!!!");
-        }
-        return log_file;
+        return json;
     }
 
     // source parameters
-    console.log('log_config_path =', log_conf, 'namespace =', current_namespace_name);
-    // const log_conf = log_config_path?log_config_path:'./properties/log4js.json';// relative path to the properties file (JSON)
+    console.log('log_config =', log_conf, 'namespace =', current_namespace_name);
+    let log;
+    if (typeof(log_conf) === 'string') {//log config file path is defined
     const conf_file = utils.search_file(log_conf);
     if (conf_file) {
-        // correcting(conf_file);
-        // log4js.configure(conf_file, {});
-        log4js.configure(correcting(conf_file), {});
+            console.log("Logger: opening log-conf file: " + conf_file);
+            log = fs.readFileSync(conf_file, 'utf8');
+        } else {
+            console.error('Logger: could not find: '+conf_file);
+        }
+    } else if (log_conf instanceof Object){//log config (object) is defined
+        console.log('Logger: use defined config\n'+log_conf);
+        log = JSON.stringify(log_conf);
+    }
+    // const log_conf = log_config?log_config:'./properties/log4js.json';// relative path to the properties file (JSON)
+    if (log) {
+        log4js.configure(correcting(log), {});
     } else {
-        console.warn(log_conf, "couldn't find");
+        console.warn("Logger: wrong parameter", log);
     }
 
     /**

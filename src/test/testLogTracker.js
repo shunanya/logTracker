@@ -4,7 +4,8 @@
  The module start up the test HTTP server that is intended for testing log-tracking workability.
  */
 
-global.log_config_path = './IoT_/properties/log4js.json'; //replace by existing config path
+//global.log_config = './IoT_/properties/log4js.json'; //replace by existing config path
+global.log_config = require('./log4js_conf').log_conf;//'./IoT_/properties/log4js.json'; //replace by existing config path
 global.namespace_name = 'appNamespace'; // replace by desired name
 
 const http = require('http');
