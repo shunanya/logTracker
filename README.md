@@ -12,9 +12,11 @@ Moreover, the opt parameter can representing Request object (http.IncomingMessag
 Please Note that the custom Object can consists any other keys which do message more informative.
 So next, any log record will be appended by unique tracking info which allow to simply tracks any separate request.
 #### Logger ####
-The embedded logger wraps the log4js module. It override the log4js all important methods (TRACE, DEBUG, INFO, WARN, ERROR, FATAL). So you can use it as ordinary logger. It will append tracking info into log records in case you call 'startTracking' method at moment when request is arive. Otherwise, it will work like ordinary logger. 
-It gives a possibility to point relative definition of logs location  in the log4js config file. Note that the config file have to be located in the './properties/' folder somewhere higher of current location. Naturally, you can define some other path (relative or absolute) by using global.log_config_path variable.
-Alternative, the logger configuration can be defined directly.
+The embedded logger wraps the log4js module. It override the log4js all important methods (TRACE, DEBUG, INFO, WARN, ERROR, FATAL). So you can use it as ordinary logger. It will append tracking info into log records in case you call 'startTracking' method at moment when request is arive. Otherwise, it will work like ordinary logger.   
+It gives a possibility to point relative definition of logs location  in the log4js config file. Note that the config file have to be located in the './properties/' folder somewhere higher of current location.  
+Naturally, you can define some other path (relative or absolute) by using global.log_config_path variable.
+Alternative, the logger configuration can be defined directly.  
+
 The configuration should be prepared according [log4js v2 or higher notations](https://github.com/log4js-node/log4js-node).  
 
 Please find the sample of log4js configuration [here](https://www.screencast.com/t/lH3lUkwL).
@@ -46,7 +48,7 @@ parameter **callback** is standard callback(err, data)
 ### Usage ###
 **Minimalist version:**
 
->> // one of bellow listed definitions can be provided
+>> // one of bellow listed definitions can be provided  
 >>global.**log_config** = 'existing log config path' //default path ('./properties/log4js.json') will be used if this definition omitted  
 >>global.**log_config** = require('log4j_config').log_conf; // logger configuration can be defined in the JS file directly.  
 
