@@ -14,7 +14,8 @@ So next, any log record will be appended by unique tracking info which allow to 
 #### Logger ####
 The embedded logger wraps the log4js module. It override the log4js all important methods (TRACE, DEBUG, INFO, WARN, ERROR, FATAL). So you can use it as ordinary logger. It will append tracking info into log records in case you call 'startTracking' method at moment when request is arive. Otherwise, it will work like ordinary logger.   
 It gives a possibility to point relative definition of logs location  in the log4js config file. Note that the config file have to be located in the './properties/' folder somewhere higher of current location.  
-Naturally, you can define some other path (relative or absolute) by using global.log_config_path variable.
+Naturally, you can define some other path (relative or absolute) by using global.log_config_path variable.  
+
 Alternative, the logger configuration can be defined directly.  
 
 The configuration should be prepared according [log4js v2 or higher notations](https://github.com/log4js-node/log4js-node).  
