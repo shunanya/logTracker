@@ -126,17 +126,6 @@ const namespace = createNamespace(current_namespace_name);
     };
     exports.getLogger = getLogger;
 
-    // levels = {
-    // ALL: new Level(Number.MIN_VALUE, "ALL", "grey"),
-    // TRACE: new Level(5000, "TRACE", "blue"),
-    // DEBUG: new Level(10000, "DEBUG", "cyan"),
-    // INFO: new Level(20000, "INFO", "green"),
-    // WARN: new Level(30000, "WARN", "yellow"),
-    // ERROR: new Level(40000, "ERROR", "red"),
-    // FATAL: new Level(50000, "FATAL", "magenta"),
-    //   OFF: new Level(Number.MAX_VALUE, "OFF", "grey")
-    //}
-
     /**
      * Initializing of request tracking log
      *
@@ -150,11 +139,11 @@ const namespace = createNamespace(current_namespace_name);
      * @param callback {Function} standard callback(err, data)
      */
     const startTracking = function(opt, callback){
-        let rid = {};
         if (opt instanceof Function){
            callback = opt;
            opt = undefined;
         }
+        let rid = {};
         if (!opt) {
             rid['reqId'] = Math.ceil(Math.random() * 10000);
         } else if (typeof(opt) === "number" || typeof(opt) === "string"){
@@ -177,7 +166,7 @@ const namespace = createNamespace(current_namespace_name);
             }
         }
         namespace.run(() => {
-            namespace.set('reqId', rid/*Math.ceil(Math.random()*1000)*/);
+            namespace.set('reqId', rid);
             callback(null, 'Ok');
         })
     };
@@ -193,21 +182,8 @@ class Logger {
      */
     constructor(logger_name) {
         this.log = log4js.getLogger(logger_name);
-        this.log.info(">>>>>>>>> Logger for '" + this.log.category + "' initialized with success. Log Level: " + this.log.level + " <<<<<<<<<");
+        this.log.info(">>>>>>>>> Logger for '" + this.log.category + "' initialized with success. Log Level: " + this.log.level, " <<<<<<<<<");
         console.log('Logger created ', logger_name);
-    }
-
-    /**
-     * Internally used message formatter
-     * @param message the logging message
-     * @returns {string} the updated message (by adding tracking info)
-     * @private
-     */
-    _formatMessage(message){
-        const namespace = getNamespace(current_namespace_name);
-        const pre = namespace && namespace.get('reqId')? (JSON.stringify(namespace.get('reqId'))+': '):'';
-        message = pre+message;
-        return message;
     }
 
     /**
@@ -216,29 +192,29 @@ class Logger {
      */
     getTracking(){
         const namespace = getNamespace(current_namespace_name);
-        return namespace && namespace.get('reqId');
+        return namespace && namespace.get('reqId') || '';
     }
 
     log(level, message) {
-        this.log.log(level, this._formatMessage(message));
+        this.log.log(level, this.getTracking(), message);
     }
     error(message) {
-        this.log.error(this._formatMessage(message));
+        this.log.error(this.getTracking(), message);
     }
     warn(message) {
-        this.log.warn(this._formatMessage(message));
+        this.log.warn(this.getTracking(), message);
     }
     fatal(message) {
-        this.log.fatal(this._formatMessage(message));
+        this.log.fatal(this.getTracking(), message);
     }
     info(message) {
-        this.log.info(this._formatMessage(message));
+        this.log.info(this.getTracking(), message);
     }
     debug(message) {
-        this.log.debug(this._formatMessage(message));
+        this.log.debug(this.getTracking(), message);
     }
     trace(message) {
-        this.log.trace(this._formatMessage(message));
+        this.log.trace(this.getTracking(), message);
     }
     isInfoEnabled() {
         return this.log.isInfoEnabled();

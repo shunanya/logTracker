@@ -18,17 +18,17 @@ const users = ['simon', 'john'];
 
 http.createServer((req, res) => {
     if (nlogger.isInfoEnabled()) {
-        nlogger.info('>>>>>>>>>>>>');
+        nlogger.info('>>>>>>>>>>>>', 'processing request');
     }
     logger.startTracking({req:req, user:users[Math.round(Math.random()+0.1)]}, (err, data) => {
     // logger.startTracking(Math.ceil(Math.random() * 1000), (err, data) => {
             qlogger.warn('start tracking err:'+ err+'; data:'+ data);
             setTimeout(() => {
                 res.end('err:'+err+' data:'+data);
-                nlogger.info('>>>> request finished');
+                nlogger.info('>>>> request finished '+ JSON.stringify(nlogger.getTracking()));
             }, 1000);
             nlogger.info('!!! request finishing !!!');
         });
 }).listen(port, host);
 
-nlogger.info('HTTP Server listen on port '+ port);
+nlogger.info('HTTP Server listen on port ', port);
