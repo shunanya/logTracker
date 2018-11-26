@@ -22,8 +22,50 @@ const namespace = createNamespace(current_namespace_name);
 
 (function() {
     const path = require('path')
-        , fs = require('fs')
-        , utils = require('./utils');
+        , fs = require('fs');
+
+    /**
+     * Searching of specified file/dir beginning from 'start_dir' up to 'end_dir'.
+     *
+     * At the end of search the full path will returned on success.
+     * The default path (def-file_path) can be specified. it will return on search failed.
+     */
+    function search_file(file_path, def_file_path) {
+        const end_dir = '/';			//root folder as the end dir of searching
+        const start_dir = __dirname;	//current folder as the start dir of searching
+        let isDir = false;
+        if (file_path.charAt(file_path.length - 1) === '/') {
+            isDir = true
+        }
+        let file = undefined;
+        let _file;
+        let cur_path = start_dir; // current folder
+        while (cur_path !== end_dir) {
+            _file = path.normalize(path.resolve(cur_path, '..', file_path));
+            if (fs.existsSync(_file) && fs.statSync(_file).isDirectory() === isDir) {
+                file = _file;
+			    // console.log("FOUND: "+file);
+                break;
+            } else {
+			    // console.log("NOT found "+_file);
+                cur_path = path.join(cur_path, '..');
+            }
+        }
+        return file || def_file_path;
+    }
+
+    /**
+     * Returns parent dirname if parameter represents a path to file.
+     * Otherwise returns the same path.
+     */
+    function _dirname(value) {
+        if (typeof(value) === 'string') {//parameter is string
+            if (value.charAt(value.length - 1) !== '/') {//path to file
+                return value.replace(path.basename(value), '');
+            }
+            return value;
+        }
+    }
 
     /**
      * rewrite log4js configuration by replacing relative paths to absolute (if necessary)
@@ -36,9 +78,9 @@ const namespace = createNamespace(current_namespace_name);
     function correcting(log) {
         const json = JSON.parse(log, function (key, value) {
             if (key === 'filename' && !path.isAbsolute(value)) {
-                const dirname = utils.dirname(value);
+                const dirname = _dirname(value);
                 const basename = value.replace(dirname, '');
-                let file = utils.search_file(dirname);
+                let file = search_file(dirname);
                 file = path.join(file, basename);
                 if (file !== value) {
                     value = file;
@@ -53,7 +95,7 @@ const namespace = createNamespace(current_namespace_name);
     console.log('log_config =', log_conf, 'namespace =', current_namespace_name);
     let log;
     if (typeof(log_conf) === 'string') {//log config file path is defined
-    const conf_file = utils.search_file(log_conf);
+        const conf_file = search_file(log_conf);
     if (conf_file) {
             console.log("Logger: opening log-conf file: " + conf_file);
             log = fs.readFileSync(conf_file, 'utf8');
@@ -145,39 +187,58 @@ const namespace = createNamespace(current_namespace_name);
 
 class Logger {
     
+    /**
+     * Creates the new logger
+     * @param logger_name the name for logger
+     */
     constructor(logger_name) {
         this.log = log4js.getLogger(logger_name);
         this.log.info(">>>>>>>>> Logger for '" + this.log.category + "' initialized with success. Log Level: " + this.log.level + " <<<<<<<<<");
         console.log('Logger created ', logger_name);
     }
 
-    formatMessage(message){
+    /**
+     * Internally used message formatter
+     * @param message the logging message
+     * @returns {string} the updated message (by adding tracking info)
+     * @private
+     */
+    _formatMessage(message){
         const namespace = getNamespace(current_namespace_name);
         const pre = namespace && namespace.get('reqId')? (JSON.stringify(namespace.get('reqId'))+': '):'';
         message = pre+message;
         return message;
     }
 
+    /**
+     * Returns the tracking info
+     * @returns {Object} the tracking info (if exist)
+     */
+    getTracking(){
+        const namespace = getNamespace(current_namespace_name);
+        return namespace && namespace.get('reqId');
+    }
+
     log(level, message) {
-        this.log.log(level, this.formatMessage(message));
+        this.log.log(level, this._formatMessage(message));
     }
     error(message) {
-        this.log.error(this.formatMessage(message));
+        this.log.error(this._formatMessage(message));
     }
     warn(message) {
-        this.log.warn(this.formatMessage(message));
+        this.log.warn(this._formatMessage(message));
     }
     fatal(message) {
-        this.log.fatal(this.formatMessage(message));
+        this.log.fatal(this._formatMessage(message));
     }
     info(message) {
-        this.log.info(this.formatMessage(message));
+        this.log.info(this._formatMessage(message));
     }
     debug(message) {
-        this.log.debug(this.formatMessage(message));
+        this.log.debug(this._formatMessage(message));
     }
     trace(message) {
-        this.log.trace(this.formatMessage(message));
+        this.log.trace(this._formatMessage(message));
     }
     isInfoEnabled() {
         return this.log.isInfoEnabled();

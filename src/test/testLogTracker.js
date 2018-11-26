@@ -1,11 +1,11 @@
 'use strict';
 
 /*
- The module start up the test HTTP server that is intended for testing log-tracking workability.
+ This module starts up the test HTTP server that is intended for testing log-tracking workability.
  */
 
-//global.log_config = './IoT_/properties/log4js.json'; //replace by existing config path
-global.log_config = require('./log4js_conf').log_conf;//'./IoT_/properties/log4js.json'; //replace by existing config path
+global.log_config = require('./log4js_conf').log_conf;
+// global.log_config = './properties/log4js.json'; //alternatively the relative ior absolute path to the log4js configuration can be defined there as well (e.g. './IoT_/properties/log4js.json')
 global.namespace_name = 'appNamespace'; // replace by desired name
 
 const http = require('http');
