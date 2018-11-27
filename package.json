@@ -1,14 +1,14 @@
 {
   "name": "log-tracking",
-  "version": "1.1.2",
-  "description": "Logging that support requests tracking",
+  "version": "1.2.0",
+  "description": "Logging which supports request tracking",
   "main": "index.js",
+  "files": [
+    "index.js",
+    "logTracker.js"
+  ],
   "scripts": {
-    "test": "./log-tracking/src/test/testLogTracker.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:shunanya/logTracker.git"
+    "test": "./src/test/testLogTracker.js"
   },
   "keywords": [
     "Node.js",
@@ -17,13 +17,17 @@
   ],
   "author": {
     "name": "Simon Hunanyan",
-    "email": "simon.hunanyan@monitis.com"
+    "email": "simon.hunanyan@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shunanya/logTracker.git"
   },
   "bugs": {
     "url": "https://github.com/shunanya/logTracker/issues"
   },
   "directories": {
-    "src": "./log-tracking/src"
+    "src": "./src"
   },
   "engines": {
     "node": ">=8"

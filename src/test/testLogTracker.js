@@ -9,9 +9,9 @@ global.log_config = require('./log4js_conf').log_conf;
 global.namespace_name = 'appNamespace'; // replace by desired name
 
 const http = require('http');
-const logger = require('../logTracker');
-const nlogger = logger.getLogger('node_server');
-const qlogger = logger.getLogger('node_queue');
+const logTr = require('../logTracker');
+const nlogger = logTr.getLogger('node_server');
+const qlogger = logTr.getLogger('node_queue');
 const host = '127.0.0.1';
 const port = 8080;
 const users = ['simon', 'john'];
@@ -20,11 +20,11 @@ http.createServer((req, res) => {
     if (nlogger.isInfoEnabled()) {
         nlogger.info('>>>>>>>>>>>>', 'processing request');
     }
-    logger.startTracking({req:req, user:users[Math.round(Math.random()+0.1)]}, (err, data) => {
+    logTr.startTracking({req:req, user:users[Math.round(Math.random()+0.1)]}, (err, data) => {
     // logger.startTracking(Math.ceil(Math.random() * 1000), (err, data) => {
-            qlogger.warn('start tracking err:'+ err+'; data:'+ data);
+            qlogger.warn('start tracking err:'+ err,' data:'+ data);
             setTimeout(() => {
-                res.end('err:'+err+' data:'+data);
+                res.end('err:'+err, ' data:'+data);
                 nlogger.info('>>>> request finished '+ JSON.stringify(nlogger.getTracking()));
             }, 1000);
             nlogger.info('!!! request finishing !!!');

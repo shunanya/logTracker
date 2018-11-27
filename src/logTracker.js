@@ -182,7 +182,7 @@ class Logger {
      */
     constructor(logger_name) {
         this.log = log4js.getLogger(logger_name);
-        this.log.info(">>>>>>>>> Logger for '" + this.log.category + "' initialized with success. Log Level: " + this.log.level, " <<<<<<<<<");
+        this.log.info(">>>>>>>>> Logger for '" + this.log.category + "' initialized with success.", "Log Level: " + this.log.level, " <<<<<<<<<");
         console.log('Logger created ', logger_name);
     }
 
@@ -192,29 +192,38 @@ class Logger {
      */
     getTracking(){
         const namespace = getNamespace(current_namespace_name);
-        return namespace && namespace.get('reqId') || '';
+        return namespace && namespace.get('reqId') || null;
     }
 
-    log(level, message) {
-        this.log.log(level, this.getTracking(), message);
+    fatal(...message) {
+        const tr = this.getTracking();
+        if (tr) message.splice(0, 0, JSON.stringify(tr));
+        this.log.fatal(...message);
     }
-    error(message) {
-        this.log.error(this.getTracking(), message);
+    error(...message) {
+        const tr = this.getTracking();
+        if (tr) message.splice(0, 0, JSON.stringify(tr));
+        this.log.error(...message);
     }
-    warn(message) {
-        this.log.warn(this.getTracking(), message);
+    warn(...message) {
+        const tr = this.getTracking();
+        if (tr) message.splice(0, 0, JSON.stringify(tr));
+        this.log.warn(...message);
     }
-    fatal(message) {
-        this.log.fatal(this.getTracking(), message);
+    info(...message) {
+        const tr = this.getTracking();
+        if (tr) message.splice(0, 0, JSON.stringify(tr));
+        this.log.info(...message);
     }
-    info(message) {
-        this.log.info(this.getTracking(), message);
+    debug(...message) {
+        const tr = this.getTracking();
+        if (tr) message.splice(0, 0, JSON.stringify(tr));
+        this.log.debug(...message);
     }
-    debug(message) {
-        this.log.debug(this.getTracking(), message);
-    }
-    trace(message) {
-        this.log.trace(this.getTracking(), message);
+    trace(...message) {
+        const tr = this.getTracking();
+        if (tr) message.splice(0, 0, JSON.stringify(tr));
+        this.log.trace(...message);
     }
     isInfoEnabled() {
         return this.log.isInfoEnabled();
