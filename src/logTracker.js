@@ -8,17 +8,16 @@ const log4js = require('log4js');
 const util = require('util');
 const hash = require('node_hash');
 const _ = require('lodash');
-let log_conf = './properties/log4js.json'; // default log configuration file
-try {
-    log_conf = log_config;
-} catch (err){/*ignore*/};
-let current_namespace_name = 'defaultNamespace';
-try{
-    current_namespace_name = namespace_name;
-} catch (err){/*ignore*/}
 const getNamespace = require('cls-hooked').getNamespace;
 const createNamespace = require('cls-hooked').createNamespace;
-const namespace = createNamespace(current_namespace_name);
+if (!global.log_config) {
+    global.log_config = './properties/log4js.json'; // default log configuration file
+}
+if (!global.namespace_name){
+    global.namespace_name = 'defaultNamespace';
+}
+const namespace = createNamespace(global.namespace_name);
+const loggersMap = {};
 
 (function() {
     const path = require('path')
@@ -92,21 +91,20 @@ const namespace = createNamespace(current_namespace_name);
     }
 
     // source parameters
-    console.log('log_config =', log_conf, 'namespace =', current_namespace_name);
+    console.log('log_config =', global.log_config, 'namespace =', global.namespace_name);
     let log;
-    if (typeof(log_conf) === 'string') {//log config file path is defined
-        const conf_file = search_file(log_conf);
+    if (typeof(global.log_config) === 'string') {//log config file path is defined
+        const conf_file = search_file(global.log_config);
     if (conf_file) {
             console.log("Logger: opening log-conf file: " + conf_file);
             log = fs.readFileSync(conf_file, 'utf8');
         } else {
             console.error('Logger: could not find: '+conf_file);
         }
-    } else if (log_conf instanceof Object){//log config (object) is defined
-        console.log('Logger: use defined config\n'+log_conf);
-        log = JSON.stringify(log_conf);
+    } else if (global.log_config instanceof Object){//log config (object) is defined
+        console.log('Logger: use defined config\n'+global.log_config);
+        log = JSON.stringify(global.log_config);
     }
-    // const log_conf = log_config?log_config:'./properties/log4js.json';// relative path to the properties file (JSON)
     if (log) {
         log4js.configure(correcting(log), {});
     } else {
@@ -120,9 +118,14 @@ const namespace = createNamespace(current_namespace_name);
      * @returns {Logger} the object that can be used for logging
      */
     const getLogger = function (logger_name) {
+        if (loggersMap[logger_name]){
+            return loggersMap[logger_name];
+        } else {
         const log = new Logger(logger_name);
         log.info(`>>>>>>>>> Logger '${logger_name}' created...`);
+            loggersMap[logger_name] = log;
         return log;
+        }
     };
     exports.getLogger = getLogger;
 
@@ -191,7 +194,7 @@ class Logger {
      * @returns {Object} the tracking info (if exist)
      */
     getTracking(){
-        const namespace = getNamespace(current_namespace_name);
+        const namespace = getNamespace(global.namespace_name);
         return namespace && namespace.get('reqId') || null;
     }
 
