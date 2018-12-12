@@ -2,6 +2,7 @@
 
 global.log_config;
 global.namespace_name;
+// global.namespace;
 
 const http = require('http');
 const log4js = require('log4js');
@@ -10,19 +11,19 @@ const hash = require('node_hash');
 const _ = require('lodash');
 const getNamespace = require('cls-hooked').getNamespace;
 const createNamespace = require('cls-hooked').createNamespace;
-if (!global.log_config) {
-    global.log_config = './properties/log4js.json'; // default log configuration file
-}
-if (!global.namespace_name){
-    global.namespace_name = 'defaultNamespace';
-}
-const namespace = createNamespace(global.namespace_name);
-const loggersMap = {};
 
 (function() {
     const path = require('path')
         , fs = require('fs');
 
+    if (!global.log_config) {
+        global.log_config = './properties/log4js.json'; // default log configuration file
+    }
+    if (!global.namespace_name){
+        global.namespace_name = 'defaultNamespace';
+    }
+    global.namespace = createNamespace(global.namespace_name);
+    const loggersMap = {};
     /**
      * Searching of specified file/dir beginning from 'start_dir' up to 'end_dir'.
      *
@@ -95,7 +96,7 @@ const loggersMap = {};
     let log;
     if (typeof(global.log_config) === 'string') {//log config file path is defined
         const conf_file = search_file(global.log_config);
-    if (conf_file) {
+        if (conf_file) {
             console.log("Logger: opening log-conf file: " + conf_file);
             log = fs.readFileSync(conf_file, 'utf8');
         } else {
@@ -121,10 +122,10 @@ const loggersMap = {};
         if (loggersMap[logger_name]){
             return loggersMap[logger_name];
         } else {
-        const log = new Logger(logger_name);
-        log.info(`>>>>>>>>> Logger '${logger_name}' created...`);
+            const log = new Logger(logger_name);
+            log.info(`>>>>>>>>> Logger '${logger_name}' created...`);
             loggersMap[logger_name] = log;
-        return log;
+            return log;
         }
     };
     exports.getLogger = getLogger;
@@ -143,8 +144,8 @@ const loggersMap = {};
      */
     const startTracking = function(opt, callback){
         if (opt instanceof Function){
-           callback = opt;
-           opt = undefined;
+            callback = opt;
+            opt = undefined;
         }
         let rid = {};
         if (!opt) {
@@ -155,22 +156,22 @@ const loggersMap = {};
             if (opt instanceof http.IncomingMessage) {
                 console.log('----- Request received');
                 rid['reqId'] = hash.md5(util.inspect(opt));
-                namespace.bindEmitter(opt);
+                global.namespace.bindEmitter(opt);
                 console.log('----- hash = ', rid['reqId']);
             } else if (opt['reqId'] || (opt['req'] && opt['req'] instanceof http.IncomingMessage)) {
                 rid = _.clone(opt);
                 if (opt['req']) {
                     rid['reqId'] = hash.md5(util.inspect(opt['req']));
-                    namespace.bindEmitter(opt['req']);
+                    global.namespace.bindEmitter(opt['req']);
                 }
                 delete rid['req'];
             } else {
                 return callback('invalid parameters');
             }
         }
-        namespace.run(() => {
-            namespace.set('reqId', rid);
-            callback(null, 'Ok');
+        global.namespace.run(() => {
+            global.namespace.set('reqId', rid);
+            callback(null, global.namespace);
         })
     };
     exports.startTracking = startTracking;
@@ -178,7 +179,7 @@ const loggersMap = {};
 })();
 
 class Logger {
-    
+
     /**
      * Creates the new logger
      * @param logger_name the name for logger
@@ -194,8 +195,12 @@ class Logger {
      * @returns {Object} the tracking info (if exist)
      */
     getTracking(){
-        const namespace = getNamespace(global.namespace_name);
-        return namespace && namespace.get('reqId') || null;
+        try {
+            // const namespace = getNamespace(global.namespace_name);
+            return global.namespace && global.namespace.get('reqId') || null;
+        } catch (err){
+            console.error(err);
+        }
     }
 
     fatal(...message) {
