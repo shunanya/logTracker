@@ -149,19 +149,19 @@ const createNamespace = require('cls-hooked').createNamespace;
         }
         let rid = {};
         if (!opt) {
-            rid['reqId'] = Math.ceil(Math.random() * 10000);
+            rid['trId'] = Math.ceil(Math.random() * 10000);
         } else if (typeof(opt) === "number" || typeof(opt) === "string"){
-            rid['reqId'] = opt;
+            rid['trId'] = opt;
         } else if (opt instanceof Object) {
             if (opt instanceof http.IncomingMessage) {
                 console.log('----- Request received');
-                rid['reqId'] = hash.md5(util.inspect(opt));
+                rid['trId'] = hash.md5(util.inspect(opt));
                 global.namespace.bindEmitter(opt);
-                console.log('----- hash = ', rid['reqId']);
-            } else if (opt['reqId'] || (opt['req'] && opt['req'] instanceof http.IncomingMessage)) {
+                console.log('----- hash = ', rid['trId']);
+            } else if (opt['trId'] || (opt['req'] && opt['req'] instanceof http.IncomingMessage)) {
                 rid = _.clone(opt);
                 if (opt['req']) {
-                    rid['reqId'] = hash.md5(util.inspect(opt['req']));
+                    rid['trId'] = hash.md5(util.inspect(opt['req']));
                     global.namespace.bindEmitter(opt['req']);
                 }
                 delete rid['req'];
