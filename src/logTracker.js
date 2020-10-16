@@ -70,6 +70,7 @@ const createNamespace = require('cls-hooked').createNamespace;
 
     /**
      * rewrite log4js configuration by replacing relative paths to absolute (if necessary)
+     * It uses path defined in log4js config or global.log_file_parent (if defined)
      *
      * @param log {String|Object}
      *            can be defined as absolute or relative path to the log config file
@@ -83,17 +84,24 @@ const createNamespace = require('cls-hooked').createNamespace;
                 const basename = value.replace(dirname, '');
                 let file = search_file(dirname);
                 if (!file) {
-                    if (_.isEmpty(global.log_file_parent)) {
-                        throw new Error('Could not find or create folder '+dirname+' \nCreate it manually or define the parent folder in variable "global.log_file_parent"');
+                    let parent;
+                    if (path.isAbsolute(global.log_file_parent)) {
+                        parent = global.log_file_parent;
                     } else {
-                        const parent = search_file(global.log_file_parent);
-                        if (parent) {
-                            file = path.join(parent, dirname);
+                        parent = search_file(global.log_file_parent);
+                    }
+                    if (parent) {
+                        file = path.join(parent, dirname);
+                        if (!fs.existsSync(file)) {
                             fs.mkdirSync(file, {recursive: true});
                         }
                     }
                 }
-                file = path.join(file, basename);
+                if (_.isEmpty(file)) {
+                    throw new Error('Could not find or create folder ' + dirname + ' \nCreate it manually or def eine the parent folder in variable "global.log_file_parent"');
+                } else {
+                    file = path.join(file, basename);
+                }
                 if (file !== value) {
                     value = file;
                 }
