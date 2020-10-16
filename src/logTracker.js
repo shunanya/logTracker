@@ -2,7 +2,7 @@
 
 global.log_config;
 global.namespace_name;
-// global.namespace;
+global.log_file_parent;
 
 const http = require('http');
 const log4js = require('log4js');
@@ -12,18 +12,19 @@ const _ = require('lodash');
 const getNamespace = require('cls-hooked').getNamespace;
 const createNamespace = require('cls-hooked').createNamespace;
 
-(function() {
+(function () {
     const path = require('path')
         , fs = require('fs');
 
     if (!global.log_config) {
         global.log_config = './properties/log4js.json'; // default log configuration file
     }
-    if (!global.namespace_name){
+    if (!global.namespace_name) {
         global.namespace_name = 'defaultNamespace';
     }
     global.namespace = createNamespace(global.namespace_name);
     const loggersMap = {};
+
     /**
      * Searching of specified file/dir beginning from 'start_dir' up to 'end_dir'.
      *
@@ -44,10 +45,10 @@ const createNamespace = require('cls-hooked').createNamespace;
             _file = path.normalize(path.resolve(cur_path, '..', file_path));
             if (fs.existsSync(_file) && fs.statSync(_file).isDirectory() === isDir) {
                 file = _file;
-			    // console.log("FOUND: "+file);
+                // console.log("FOUND: "+file);
                 break;
             } else {
-			    // console.log("NOT found "+_file);
+                // console.log("NOT found "+_file);
                 cur_path = path.join(cur_path, '..');
             }
         }
@@ -59,7 +60,7 @@ const createNamespace = require('cls-hooked').createNamespace;
      * Otherwise returns the same path.
      */
     function _dirname(value) {
-        if (typeof(value) === 'string') {//parameter is string
+        if (typeof (value) === 'string') {//parameter is string
             if (value.charAt(value.length - 1) !== '/') {//path to file
                 return value.replace(path.basename(value), '');
             }
@@ -81,6 +82,17 @@ const createNamespace = require('cls-hooked').createNamespace;
                 const dirname = _dirname(value);
                 const basename = value.replace(dirname, '');
                 let file = search_file(dirname);
+                if (!file) {
+                    if (_.isEmpty(global.log_file_parent)) {
+                        throw new Error('Could not find or create folder '+dirname+' \nCreate it manually or define the parent folder in variable "global.log_file_parent"');
+                    } else {
+                        const parent = search_file(global.log_file_parent);
+                        if (parent) {
+                            file = path.join(parent, dirname);
+                            fs.mkdirSync(file, {recursive: true});
+                        }
+                    }
+                }
                 file = path.join(file, basename);
                 if (file !== value) {
                     value = file;
@@ -94,16 +106,16 @@ const createNamespace = require('cls-hooked').createNamespace;
     // source parameters
     console.log('log_config =', global.log_config, 'namespace =', global.namespace_name);
     let log;
-    if (typeof(global.log_config) === 'string') {//log config file path is defined
+    if (typeof (global.log_config) === 'string') {//log config file path is defined
         const conf_file = search_file(global.log_config);
         if (conf_file) {
             console.log("Logger: opening log-conf file: " + conf_file);
             log = fs.readFileSync(conf_file, 'utf8');
         } else {
-            console.error('Logger: could not find: '+conf_file);
+            console.error('Logger: could not find: ' + conf_file);
         }
-    } else if (global.log_config instanceof Object){//log config (object) is defined
-        console.log('Logger: use defined config\n'+global.log_config);
+    } else if (global.log_config instanceof Object) {//log config (object) is defined
+        console.log('Logger: use defined config\n' + global.log_config);
         log = JSON.stringify(global.log_config);
     }
     if (log) {
@@ -119,7 +131,7 @@ const createNamespace = require('cls-hooked').createNamespace;
      * @returns {Logger} the object that can be used for logging
      */
     const getLogger = function (logger_name) {
-        if (loggersMap[logger_name]){
+        if (loggersMap[logger_name]) {
             return loggersMap[logger_name];
         } else {
             const log = new Logger(logger_name);
@@ -142,15 +154,15 @@ const createNamespace = require('cls-hooked').createNamespace;
      *     NOTE: the random number will be used as a 'reqId' in case of missed opt parameter.
      * @param callback {Function} standard callback(err, data)
      */
-    const startTracking = function(opt, callback){
-        if (opt instanceof Function){
+    const startTracking = function (opt, callback) {
+        if (opt instanceof Function) {
             callback = opt;
             opt = undefined;
         }
         let rid = {};
         if (!opt) {
             rid['trId'] = Math.ceil(Math.random() * 10000);
-        } else if (typeof(opt) === "number" || typeof(opt) === "string"){
+        } else if (typeof (opt) === "number" || typeof (opt) === "string") {
             rid['trId'] = opt;
         } else if (opt instanceof Object) {
             if (opt instanceof http.IncomingMessage) {
@@ -194,11 +206,11 @@ class Logger {
      * Returns the tracking info
      * @returns {Object} the tracking info (if exist)
      */
-    getTracking(){
+    getTracking() {
         try {
             // const namespace = getNamespace(global.namespace_name);
             return global.namespace && global.namespace.get('reqId') || null;
-        } catch (err){
+        } catch (err) {
             console.error(err);
         }
     }
@@ -208,46 +220,57 @@ class Logger {
         if (tr) message.splice(0, 0, JSON.stringify(tr));
         this.log.fatal(...message);
     }
+
     error(...message) {
         const tr = this.getTracking();
         if (tr) message.splice(0, 0, JSON.stringify(tr));
         this.log.error(...message);
     }
+
     warn(...message) {
         const tr = this.getTracking();
         if (tr) message.splice(0, 0, JSON.stringify(tr));
         this.log.warn(...message);
     }
+
     info(...message) {
         const tr = this.getTracking();
         if (tr) message.splice(0, 0, JSON.stringify(tr));
         this.log.info(...message);
     }
+
     debug(...message) {
         const tr = this.getTracking();
         if (tr) message.splice(0, 0, JSON.stringify(tr));
         this.log.debug(...message);
     }
+
     trace(...message) {
         const tr = this.getTracking();
         if (tr) message.splice(0, 0, JSON.stringify(tr));
         this.log.trace(...message);
     }
+
     isInfoEnabled() {
         return this.log.isInfoEnabled();
     }
+
     isDebugEnabled() {
         return this.log.isDebugEnabled();
     }
+
     isTraceEnabled() {
         return this.log.isTraceEnabled();
     }
+
     isFatalEnabled() {
         return this.log.isFatalEnabled();
     }
+
     isErrorEnabled() {
         return this.log.isErrorEnabled();
     }
+
     isWarnEnabled() {
         return this.log.isWarnEnabled();
     }
